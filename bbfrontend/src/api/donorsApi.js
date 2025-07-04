@@ -16,8 +16,9 @@ export const useGetDonors = ({ selectedCity, bloodGroup }) => {
         setData(res.data);
       } catch (error) {
         console.error("Error fetching donors:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     if (selectedCity && bloodGroup) {
@@ -40,8 +41,9 @@ export const useGetDonorById = (donorId) => {
         setData(res.data);
       } catch (error) {
         console.error("Error fetching donor by ID:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     if (donorId) {
@@ -77,9 +79,4 @@ export const useCreateDonor = () => {
   };
 
   return { createDonor, loading, data, error };
-
 };
-
-
-
-

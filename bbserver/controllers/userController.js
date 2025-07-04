@@ -35,7 +35,7 @@ const createUser = asyncHandler(async (req, res) => {
     createToken(res, newUser._id);
     console.log(newUser);
 
-    res.status(201).json({
+    return res.status(201).json({
       _id: newUser._id,
       username: newUser.username,
       email: newUser.email,
@@ -69,7 +69,7 @@ const loginUser = asyncHandler(async (req, res) => {
       return;
     }
     createToken(res, userExists._id);
-    res.status(200).json({
+    return res.status(200).json({
       _id: userExists._id,
       username: userExists.username,
       email: userExists.email,
@@ -100,7 +100,7 @@ const getUser = asyncHandler(async (req, res) => {
 
 const changeDonorStatus = asyncHandler(async (req, res) => {
   const userId = req.user._id;
-  const {  isDonor } = req.body;
+  const { isDonor } = req.body;
   if (!userId || isDonor === undefined) {
     res.status(400);
     throw new Error("Please provide userId and isDonor status");
@@ -111,7 +111,7 @@ const changeDonorStatus = asyncHandler(async (req, res) => {
       { isDonor: isDonor },
       { new: true }
     );
-    res.status(200).json({
+    return res.status(200).json({
       message: `User ${isDonor ? "activated" : "deactivated"} successfully`,
     });
   } catch (error) {

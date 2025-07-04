@@ -1,5 +1,4 @@
-import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axiosApi from "./axiosApi";
 
 export const useRegister = () => {
@@ -29,7 +28,7 @@ export const useRegister = () => {
     } catch (err) {
       const message = err.response?.data?.message || "Something went wrong";
       setError(message);
-      throw new Error(message); // ⬅️ This is critical
+      throw new Error(message); 
     } finally {
       setLoading(false);
     }
@@ -115,4 +114,28 @@ export const useSwitchToDonor = () => {
     }
   };
   return { loading, switchToDonor, error };
+};
+
+export const useGetMe = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchMe = async () => {
+      try {
+        const res = await axiosApi.get("/user/getMe");
+        setData(res.data);
+      } catch (err) {
+        const message = err.response?.data?.message || "Something went wrong";
+        setError(message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMe();
+  }, []);
+
+  return { data, loading, error };
 };

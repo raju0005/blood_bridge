@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import DonorList from "../components/DonorComponents/DonorList";
 import { useGetDonors } from "../api/donorsApi";
 import useUserStore from "../zustand/store";
+import { useGetMe } from "../api/usersApi";
 
 const HomePage = () => {
   // const [logout] = useLogoutMutation();
@@ -26,7 +27,7 @@ const HomePage = () => {
 
   const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-"];
 
-  const userInfo = useUserStore((state) => state.userInfo);
+  const setUserInfo = useUserStore((state) => state.setUserInfo);
 
   const { data: donors, loading: isLoading } = useGetDonors(
     {
@@ -35,6 +36,8 @@ const HomePage = () => {
     },
     { skip: !filters.selectedCity || !filters.bloodGroup }
   );
+  const { data: user, loading } = useGetMe();
+
   const COUNTRY_CODE = "IN";
   //getting States by Country Code
   useEffect(() => {
@@ -57,11 +60,16 @@ const HomePage = () => {
       setCities([]);
     }
   }, [filters.selectedState, states]);
+
+  useEffect(() => {
+    if (user) {
+      setUserInfo(user);
+    }
+  }, [user, setUserInfo]);
+  
   const handleChange = (field) => (event) => {
     setFilters((prev) => ({ ...prev, [field]: event.target.value }));
   };
-
-
 
   return (
     <>
