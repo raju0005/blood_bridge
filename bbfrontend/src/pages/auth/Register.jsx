@@ -379,6 +379,7 @@ const Register = () => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            overflow:"hidden"
           }}
           className="bg-gradient-primary"
         >

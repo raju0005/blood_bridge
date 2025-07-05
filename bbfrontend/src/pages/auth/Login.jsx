@@ -208,6 +208,11 @@ const Login = () => {
             boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
             letterSpacing: "0.1em",
             gap: 2,
+            minWidth: "160px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            overflow: "hidden",
           }}
           className="bg-gradient-primary"
         >
