@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import PersonIcon from "@mui/icons-material/Person";
 import ToggleButton from "./GeneralComponents/ToggleButton";
 import { Logout } from "@mui/icons-material";
-import { useLogout, useSwitchToDonor } from "../api/usersApi";
+import { useLogout } from "../api/usersApi";
 import HamburgerNavBar from "./GeneralComponents/HamburgerNavBar";
 
 const Header = () => {
@@ -19,7 +19,6 @@ const Header = () => {
   const location = useLocation();
 
   const { logout, loading: isLoading } = useLogout();
-  const { switchToDonor, loading: isloading } = useSwitchToDonor();
 
   useEffect(() => {
     if (location.pathname === "/home" && userInfo) {
@@ -33,10 +32,6 @@ const Header = () => {
     logout();
     clearUserInfo();
     navigate("/");
-  };
-
-  const switchDonor = () => {
-    switchToDonor({ isDonor: true });
   };
 
   return (
@@ -73,9 +68,7 @@ const Header = () => {
               gap: { xs: 1, md: 3 },
             }}
           >
-            {showProfile && !userInfo?.isDonor && (
-              <ToggleButton switchDonor={switchDonor} />
-            )}
+            {showProfile && !userInfo?.isDonor && <ToggleButton />}
 
             <Box sx={{ display: { xs: "flex", md: "none" } }}>
               <HamburgerNavBar logout={handleLogout} />

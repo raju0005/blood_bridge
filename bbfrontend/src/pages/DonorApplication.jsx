@@ -43,6 +43,9 @@ const DonorApplication = () => {
   useEffect(() => {
     const fetched_states = State.getStatesOfCountry(COUNTRY_CODE);
     setStates(fetched_states);
+    if (userInfo.isDonor) {
+      navigate("/home");
+    }
   }, []);
 
   //getting Cities by State ISO CODE
@@ -482,12 +485,37 @@ const DonorApplication = () => {
           }}
         >
           <Button
-            variant="contained"
-            className="bg-gradient-primary"
             type="submit"
-            size="large"
+            variant="contained"
+            sx={{
+              height: 40,
+              fontWeight: "bold",
+              fontSize: 15,
+              letterSpacing: "0.1em",
+              boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+              gap: 2,
+              minWidth: "120px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+            }}
+            className="bg-gradient-primary"
           >
-            Submit
+            <span
+              className={`${
+                isLoading ? "text-hide" : ""
+              } transition-opacity duration-400 ease-in-out`}
+            >
+              Submit
+            </span>
+            <span
+              className={`${
+                isLoading ? "emoji-drive" : ""
+              } block transform transition-transform text-2xl`}
+            >
+              🚑
+            </span>
           </Button>
         </Box>
       </Box>

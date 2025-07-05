@@ -55,7 +55,6 @@ const Register = () => {
         username: data.name,
         phonenumber: data.phonenumber,
         password: data.password,
-        isDonor: userType === "donor",
       });
 
       setUserInfo(response);

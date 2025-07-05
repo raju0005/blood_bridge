@@ -1,5 +1,5 @@
 import express from "express";
-import authenticate from "../middlewares/authMiddleware.js";
+import { authenticate, isDonor } from "../middlewares/authMiddleware.js";
 import {
   createDonorDetails,
   getDonorById,
@@ -12,6 +12,11 @@ const router = express.Router();
 router.route("/getDonors").get(authenticate, getDonorsbyCityandBlood);
 router
   .route("/createdonor")
-  .post(authenticate, upload.single("profilePicture"), createDonorDetails);
+  .post(
+    authenticate,
+    isDonor,
+    upload.single("profilePicture"),
+    createDonorDetails
+  );
 router.route("/:id").get(authenticate, getDonorById);
 export default router;

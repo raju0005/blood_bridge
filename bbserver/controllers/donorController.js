@@ -26,11 +26,10 @@ const createDonorDetails = asyncHandler(async (req, res) => {
     city,
     dateOfLastDonation,
     address,
-    userId,
   } = req.body;
+
+  const userId = req.user._id;
   const uploadedImage = req.file ? req.file.path : null;
-  console.log("Body:", req.body);
-  console.log("File:", req.file);
 
   if (
     !dateofBirth ||
@@ -46,51 +45,72 @@ const createDonorDetails = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Please fill all the input fields");
   }
-  const age = calculateAge(dateofBirth);
 
+  const age = calculateAge(dateofBirth);
   if (age < 18) {
     res.status(400);
     throw new Error("You are not eligible");
   }
 
+  const userExists = await User.findById(userId);
+  if (!userExists) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+  if (userExists.isDonor) {
+    res.status(403);
+    throw new Error("You are already registered as a donor");
+  }
+
+  const userDetailsExists = await UserDetails.findOne({ userId });
+  if (userDetailsExists) {
+    res.status(400);
+    throw new Error("User details already exist");
+  }
+
+  // Now we know the user exists, and details don't exist — safe to proceed
+  const newUserDetails = new UserDetails({
+    dateofBirth,
+    gender,
+    bloodGroup,
+    state,
+    city,
+    dateOfLastDonation,
+    userId,
+    address,
+    profilePicture: uploadedImage,
+  });
+
+  await newUserDetails.save();
+
+  // Only now: update user's donor status
+  userExists.isDonor = true;
+  await userExists.save();
+
+  res.status(201).json({
+    message: "User details added successfully",
+    details: newUserDetails,
+  });
+});
+
+//updateDonorApplication
+const updateDonorProfile = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const updates = req.body;
   try {
-    const userExists = await User.findById(userId);
-    if (!userExists) {
-      res.status(404);
-      throw new Error("User not Found");
-
-      return;
-    }
-    const userDetailsExists = await UserDetails.findOne({ userId });
-
-    if (userDetailsExists) {
-      return res.status(400);
-      throw new Error("User details already exist");
-    }
-
-    const newUserDetails = new UserDetails({
-      dateofBirth,
-      gender,
-      bloodGroup,
-      state,
-      city,
-      dateOfLastDonation,
-      userId,
-      address,
-      profilePicture: uploadedImage,
-    });
-
-    await newUserDetails.save();
-    userExists.isDonor = true;
-    await userExists.save();
-
-    return res.status(201).json({
-      message: "User details added successfully",
-      details: newUserDetails,
-    });
-  } catch (error) {
+    const updatedDonorProfile = await UserDetails.findOneAndUpdate(
+      { userId },
+      {
+        $set: updates,
+      },
+      { new: true }
+    );
+    return res
+      .status(201)
+      .json({ message: "Updated successfully", details: updatedDonorProfile });
+  } catch (err) {
     res.status(500);
-    throw new Error("Error adding user details: " + error.message);
+    throw new Error("Error updating Profile " + err.message);
   }
 });
 
@@ -147,6 +167,9 @@ const getDonorById = asyncHandler(async (req, res) => {
   }
 });
 
-
-
-export { createDonorDetails, getDonorsbyCityandBlood, getDonorById };
+export {
+  createDonorDetails,
+  getDonorsbyCityandBlood,
+  getDonorById,
+  updateDonorProfile,
+};

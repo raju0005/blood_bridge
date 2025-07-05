@@ -11,7 +11,6 @@ export const useRegister = () => {
     phonenumber,
     email,
     password,
-    isDonor,
   }) => {
     setLoading(true);
     setError(null);
@@ -21,7 +20,6 @@ export const useRegister = () => {
         phonenumber,
         email,
         password,
-        isDonor,
       });
       setData(res.data);
       return res.data;
@@ -96,25 +94,7 @@ export const useLogout = () => {
   return { logout, loading, error };
 };
 
-export const useSwitchToDonor = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
-  const switchToDonor = async ({ isDonor }) => {
-    setLoading(true);
-    try {
-      const res = await axiosApi.patch("/user/changeDonor", { isDonor });
-      return res.data;
-    } catch (err) {
-      const message = err.response?.data?.message || "Something went wrong";
-      setError(message);
-      throw new Error(message);
-    } finally {
-      setLoading(false);
-    }
-  };
-  return { loading, switchToDonor, error };
-};
 
 export const useGetMe = () => {
   const [data, setData] = useState(null);

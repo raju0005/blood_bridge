@@ -16,7 +16,6 @@ const createUser = asyncHandler(async (req, res) => {
   if (userExists) {
     res.status(409);
     throw new Error("User already exists");
-    return;
   }
 
   const salt = await bcrypt.genSalt(10);
@@ -58,15 +57,12 @@ const loginUser = asyncHandler(async (req, res) => {
   if (!userExists) {
     res.status(404);
     throw new Error("User Not Found");
-
-    return;
   }
   try {
     const isPasswordMatch = await bcrypt.compare(password, userExists.password);
     if (!isPasswordMatch) {
       res.status(401);
       throw new Error("Invalid credentials");
-      return;
     }
     createToken(res, userExists._id);
     return res.status(200).json({
@@ -98,25 +94,5 @@ const getUser = asyncHandler(async (req, res) => {
   return res.status(200).json(user);
 });
 
-const changeDonorStatus = asyncHandler(async (req, res) => {
-  const userId = req.user._id;
-  const { isDonor } = req.body;
-  if (!userId || isDonor === undefined) {
-    res.status(400);
-    throw new Error("Please provide userId and isDonor status");
-  }
-  try {
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { isDonor: isDonor },
-      { new: true }
-    );
-    return res.status(200).json({
-      message: `User ${isDonor ? "activated" : "deactivated"} successfully`,
-    });
-  } catch (error) {
-    res.status(500);
-    throw new Error("Error adding user details: " + error.message);
-  }
-});
-export { createUser, loginUser, logOutUser, getUser, changeDonorStatus };
+
+export { createUser, loginUser, logOutUser, getUser };
