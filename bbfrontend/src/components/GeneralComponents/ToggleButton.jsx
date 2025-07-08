@@ -47,16 +47,16 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 
-const ToggleButton = ({ switchDonor }) => {
+const ToggleButton = () => {
   const [checked, setChecked] = useState(false);
   const navigate = useNavigate();
 
   const handleToggle = (event) => {
     setChecked(event.target.checked);
-    switchDonor();
+    
     setTimeout(() => {
       navigate("/donor_application");
-    }, 800);
+    }, 500);
   };
 
   return (
