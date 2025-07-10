@@ -26,7 +26,7 @@ export const donorApplicationSchema = yup.object().shape({
   address: yup.string().required("Address cannot be empty"),
   dateOfLastDonation: yup
     .date()
-    .typeError("Please select a valid date of birth")
+    .typeError("Please select a valid last donation date")
     .required("Last donation date is required"),
   profilePicture: yup
     .mixed()

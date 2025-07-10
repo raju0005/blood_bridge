@@ -86,6 +86,7 @@ const createDonorDetails = asyncHandler(async (req, res) => {
   // Only now: update user's donor status
   userExists.isDonor = true;
   await userExists.save();
+  console.log(newUserDetails,userExists)
 
   res.status(201).json({
     message: "User details added successfully",
