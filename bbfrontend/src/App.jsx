@@ -9,7 +9,13 @@ const App = () => {
   return (
     <>
       <div>
-        <Toaster position="top-center" reverseOrder={true} />
+        <Toaster
+          toastOptions={{
+            className: "md:min-w-xl min-w-sm text-md md:text-lg",
+          }}
+          position="top-center"
+          reverseOrder={true}
+        />
       </div>
       <Header />
       <main className="mx-auto">

@@ -86,7 +86,7 @@ const DonorApplication = () => {
       const result = await createDonor(formData);
       console.log(result);
       toast.success(
-        "Application received! Heroes don’t wear capes—they donate blood"
+        "Application received! Heroes don’t wear capes—they donate blood."
       );
       setTimeout(() => {
         navigate("/home");

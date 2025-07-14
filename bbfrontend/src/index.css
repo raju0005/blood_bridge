@@ -21,7 +21,7 @@
 
 @layer utilities {
   .bg-gradient-primary {
-    @apply bg-gradient-to-r from-[#d10000] to-[#ff0000] text-white;
+    @apply bg-gradient-to-r from-[#d10000] to-[#ff0000] text-white transition-all duration-300 ease-in-out;
   }
   .bg-gradient-primary:hover {
     @apply from-[#ff0000] to-[#d10000];
@@ -31,6 +31,9 @@
   }
   .emoji-drive {
     animation: driveBack 1s linear infinite;
+  }
+  .font-1 {
+    font-family: "Mosafin SemBd";
   }
 
   .text-hide {

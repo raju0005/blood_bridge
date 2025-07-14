@@ -61,8 +61,8 @@ const ToggleButton = () => {
 
   return (
     <FormGroup>
-      <Box display="flex" alignItems="center" gap={1}>
-        <Typography sx={{ fontSize: { xs: 14, md: 20 } }} color="primary">
+      <Box display="flex" alignItems="center" gap={2}>
+        <Typography sx={{ fontSize: { xs: 11, md: 13 },textTransform:"uppercase" }} color="primary">
           Become a Donor
         </Typography>
         <FormControlLabel
