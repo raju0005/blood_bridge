@@ -5,56 +5,82 @@ import {
   Typography,
   Link as MuiLink,
   FormControlLabel,
-  CircularProgress,
   FormControl,
-  InputLabel,
-  OutlinedInput,
-  InputAdornment,
-  IconButton,
   Radio,
   RadioGroup,
-  FormLabel,
 } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { MuiOtpInput } from "mui-one-time-password-input";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { registerSchema } from "../../utils/yupSchemas";
-import { useRegister } from "../../api/usersApi";
+import { usePhoneAuth, useRegister } from "../../api/usersApi";
 import toast from "react-hot-toast";
 import useUserStore from "../../zustand/store";
-import { useState } from "react";
+import { auth } from "../../utils/firebase";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import { useState, useEffect } from "react";
 
 const Register = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  // const [showPassword, setShowPassword] = useState(false);
+  // const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [otp, setOtp] = useState("");
+
   const [userType, setUserType] = useState("");
 
   const {
     control,
+    watch,
+    getValues,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(registerSchema),
   });
 
+  const phonenumber = watch("phonenumber");
+
   const navigate = useNavigate();
   const setUserInfo = useUserStore((state) => state.setUserInfo);
 
   const { register, data, loading: isLoading, error } = useRegister();
+  const {
+    sendOtp,
+    verifyOtp,
+    otpSent,
+    isLoading: isOtpLoading,
+  } = usePhoneAuth();
 
-  const handleRegister = async (data) => {
-    if (data.password !== data.confirmPassword) {
-      toast.error("Passwords do not match");
+  const handleSendOtp = async (data) => {
+    const phone = getValues("phonenumber");
+    const success = await sendOtp(phone);
+    if (!success) {
+      toast.error("Failed to send OTP.");
+    }
+  };
+
+  const handleOtpVerification = async (formData) => {
+    if (!otp || otp.length !== 6) {
+      toast.error("Please enter complete OTP");
       return;
     }
 
+    const result = await verifyOtp(otp);
+    if (!result) return;
+
+    const { token } = result;
+    handleRegister(formData, token);
+  };
+
+  const handleRegister = async (data, token) => {
     try {
       const response = await register({
-        email: data.email,
+        // email: data.email,
         username: data.name,
         phonenumber: data.phonenumber,
-        password: data.password,
+        idToken: token,
+        // password: data.password,
       });
 
       setUserInfo(response);
@@ -81,6 +107,8 @@ const Register = () => {
         py: 4,
       }}
     >
+      <div id="recaptcha-container"></div>
+
       {/* Left Side Text */}
       <Box
         sx={{
@@ -107,7 +135,7 @@ const Register = () => {
       {/* Form */}
       <Box
         component="form"
-        onSubmit={handleSubmit(handleRegister)}
+        onSubmit={handleSubmit(handleOtpVerification)}
         sx={{
           width: "100%",
           maxWidth: { xs: "100%", sm: 450, md: 500 },
@@ -130,6 +158,7 @@ const Register = () => {
               {...field}
               error={!!errors.name}
               helperText={errors.name?.message}
+              disabled={isLoading}
               sx={{
                 "& .MuiInputLabel-root": {
                   fontSize: "1rem",
@@ -146,41 +175,6 @@ const Register = () => {
                   "& input": {
                     backgroundColor: "white",
                     borderRadius: "4px",
-                  },
-                },
-              }}
-            />
-          )}
-        />
-
-        {/* Email */}
-        <Controller
-          name="email"
-          control={control}
-          defaultValue=""
-          render={({ field }) => (
-            <TextField
-              label="Email"
-              fullWidth
-              {...field}
-              error={!!errors.email}
-              helperText={errors.email?.message}
-              sx={{
-                "& .MuiInputLabel-root": {
-                  fontSize: "1rem",
-                  letterSpacing: "0.1em",
-                },
-                "& .MuiOutlinedInput-root": {
-                  boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
-                  fontSize: "1rem",
-                  fontFamily: "'Mosafin SemBd', sans-serif",
-                  letterSpacing: "0.1em",
-                  "&:hover fieldset": {
-                    borderColor: "primary.main",
-                  },
-                  "& input": {
-                    backgroundColor: "white",
-                    borderRadius: "0.25rem",
                   },
                 },
               }}
@@ -189,141 +183,89 @@ const Register = () => {
         />
 
         {/* Phone Number */}
-        <Controller
-          name="phonenumber"
-          control={control}
-          defaultValue=""
-          render={({ field }) => (
-            <TextField
-              label="Phone Number"
-              fullWidth
-              {...field}
-              error={!!errors.phonenumber}
-              helperText={errors.phonenumber?.message}
-              sx={{
-                "& .MuiInputLabel-root": {
-                  fontSize: "1rem",
-                  letterSpacing: "0.1em",
-                },
-                "& .MuiOutlinedInput-root": {
-                  boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
-                  fontSize: "1rem",
-                  fontFamily: "'Mosafin SemBd', sans-serif",
-                  letterSpacing: "0.1em",
-                  "&:hover fieldset": {
-                    borderColor: "primary.main",
+        <Box sx={{ position: "relative", width: "100%" }}>
+          <Controller
+            name="phonenumber"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <TextField
+                label="Phone Number"
+                fullWidth
+                {...field}
+                error={!!errors.phonenumber}
+                helperText={errors.phonenumber?.message}
+                disabled={isLoading}
+                sx={{
+                  "& .MuiInputLabel-root": {
+                    fontSize: "1rem",
+                    letterSpacing: "0.1em",
                   },
-                  "& input": {
-                    backgroundColor: "white",
-                    borderRadius: "4px",
+                  "& .MuiOutlinedInput-root": {
+                    boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
+                    fontSize: "1rem",
+                    fontFamily: "'Mosafin SemBd', sans-serif",
+                    letterSpacing: "0.1em",
+                    "&:hover fieldset": {
+                      borderColor: "primary.main",
+                    },
+                    "& input": {
+                      backgroundColor: "white",
+                      borderRadius: "4px",
+                    },
+                  },
+                }}
+              />
+            )}
+          />
+          {phonenumber && phonenumber.length > 0 && !otpSent && (
+            <Button
+              variant="text"
+              size="small"
+              onClick={() => handleSendOtp(getValues())}
+              sx={{
+                position: "absolute",
+                top: "50%",
+                right: 10,
+                transform: "translateY(-50%)",
+                zIndex: 1,
+                padding: "4px 8px",
+                minWidth: "auto",
+              }}
+            >
+              Send OTP
+            </Button>
+          )}
+        </Box>
+
+        {/* OTP Input - Only show when OTP is sent */}
+        {otpSent && (
+          <Box>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              Enter the 6-digit OTP sent to your phone:
+            </Typography>
+            <MuiOtpInput
+              value={otp}
+              onChange={setOtp}
+              length={6}
+              TextFieldsProps={{
+                size: "small",
+                sx: {
+                  "& .MuiOutlinedInput-root": {
+                    height: 50,
+                    width: 50,
+                    "&:hover fieldset": {
+                      borderColor: "red",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "red",
+                    },
                   },
                 },
               }}
             />
-          )}
-        />
-
-        {/* Password */}
-        <Controller
-          name="password"
-          control={control}
-          defaultValue=""
-          render={({ field }) => (
-            <FormControl
-              variant="outlined"
-              fullWidth
-              error={!!errors.password}
-              sx={{
-                "& .MuiInputLabel-root": {
-                  fontSize: "1rem",
-                  letterSpacing: "0.1em",
-                },
-                "& .MuiOutlinedInput-root": {
-                  boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
-                  fontSize: "1rem",
-                  fontFamily: "'Mosafin SemBd', sans-serif",
-                  letterSpacing: "0.1em",
-                  backgroundColor: "white",
-                  borderRadius: "0.25rem",
-                  "&:hover fieldset": {
-                    borderColor: "primary.main",
-                  },
-                },
-              }}
-            >
-              <InputLabel>Password</InputLabel>
-              <OutlinedInput
-                {...field}
-                type={showPassword ? "text" : "password"}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword((prev) => !prev)}
-                      edge="end"
-                    >
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                label="Password"
-              />
-              <Typography variant="caption" color="error">
-                {errors.password?.message}
-              </Typography>
-            </FormControl>
-          )}
-        />
-
-        {/* Confirm Password */}
-        <Controller
-          name="confirmPassword"
-          control={control}
-          defaultValue=""
-          render={({ field }) => (
-            <FormControl
-              variant="outlined"
-              fullWidth
-              error={!!errors.confirmPassword}
-              sx={{
-                "& .MuiInputLabel-root": {
-                  fontSize: "1rem",
-                  letterSpacing: "0.1em",
-                },
-                "& .MuiOutlinedInput-root": {
-                  boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
-                  fontSize: "1rem",
-                  fontFamily: "'Mosafin SemBd', sans-serif",
-                  letterSpacing: "0.1em",
-                  backgroundColor: "white",
-                  borderRadius: "4px",
-                  "&:hover fieldset": {
-                    borderColor: "primary.main",
-                  },
-                },
-              }}
-            >
-              <InputLabel>Confirm Password</InputLabel>
-              <OutlinedInput
-                {...field}
-                type={showConfirmPassword ? "text" : "password"}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowConfirmPassword((prev) => !prev)}
-                      edge="end"
-                    >
-                      {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                label="Confirm Password"
-              />
-              <Typography variant="caption" color="error">
-                {errors.confirmPassword?.message}
-              </Typography>
-            </FormControl>
-          )}
-        />
+          </Box>
+        )}
 
         {/* Radio Buttons */}
         <FormControl component="fieldset">
@@ -346,6 +288,7 @@ const Register = () => {
                 />
               }
               label="I want to Donate Blood"
+              disabled={isLoading}
             />
             <FormControlLabel
               value="receiver"
@@ -360,6 +303,7 @@ const Register = () => {
                 />
               }
               label="I am looking for Blood"
+              disabled={isLoading}
             />
           </RadioGroup>
         </FormControl>
@@ -368,6 +312,7 @@ const Register = () => {
         <Button
           type="submit"
           variant="contained"
+          disabled={isLoading}
           sx={{
             height: 50,
             fontWeight: "bold",
@@ -379,7 +324,7 @@ const Register = () => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            overflow:"hidden"
+            overflow: "hidden",
           }}
           className="bg-gradient-primary"
         >

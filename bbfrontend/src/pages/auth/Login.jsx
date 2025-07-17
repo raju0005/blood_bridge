@@ -18,30 +18,63 @@ import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from "../../utils/yupSchemas";
-import { useLogin } from "../../api/usersApi";
+import { useLogin, usePhoneAuth } from "../../api/usersApi";
 import toast from "react-hot-toast";
 import useUserStore from "../../zustand/store";
+import { MuiOtpInput } from "mui-one-time-password-input";
 
 const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  // const [showPassword, setShowPassword] = useState(false);
+  const [otp, setOtp] = useState("");
   const {
     control,
+    watch,
     handleSubmit,
     formState: { errors },
     getValues,
   } = useForm({
     resolver: yupResolver(loginSchema),
   });
+  const phonenumber = watch("phonenumber");
+
   const { login, data, loading: isLoading, error } = useLogin();
+  const {
+    sendOtp,
+    verifyOtp,
+    otpSent,
+    isLoading: isOtpLoading,
+  } = usePhoneAuth();
 
   const navigate = useNavigate();
   const setUserInfo = useUserStore((state) => state.setUserInfo);
-  const handleLogin = async (data) => {
+
+  const handleSendOtp = async (data) => {
+    const phone = getValues("phonenumber");
+    const success = await sendOtp(phone);
+    if (!success) {
+      toast.error("Failed to send OTP.");
+    }
+  };
+
+  const handleOtpVerification = async (formData) => {
+    if (!otp || otp.length !== 6) {
+      toast.error("Please enter complete OTP");
+      return;
+    }
+
+    const result = await verifyOtp(otp);
+    if (!result) return;
+
+    const { token } = result;
+    handleLogin(formData, token);
+  };
+
+  const handleLogin = async (data, token) => {
     try {
       const response = await login({
-        email: data.email,
-        password: data.password,
+        phonenumber: data.phonenumber,
+        idToken: token,
       });
       console.log("Logged in Successfully:", response);
 
@@ -53,7 +86,7 @@ const Login = () => {
         navigate("/home");
       }, 800);
     } catch (err) {
-      toast.err(err?.message || "Login failed");
+      toast.error(err?.message || "Login failed");
     }
   };
 
@@ -69,6 +102,7 @@ const Login = () => {
         mx: "auto",
       }}
     >
+      <div id="recaptcha-container"></div>
       <Box
         sx={{
           width: { md: "30%", xs: "100%" },
@@ -96,7 +130,7 @@ const Login = () => {
       </Box>
       <Box
         component="form"
-        onSubmit={handleSubmit(handleLogin)}
+        onSubmit={handleSubmit(handleOtpVerification)}
         sx={{
           width: { xs: "100%", md: "40%" },
           display: "flex",
@@ -108,8 +142,8 @@ const Login = () => {
         }}
       >
         {/* Email Field */}
-        <Controller
-          name="email"
+        {/* <Controller
+          name="phonenumber"
           control={control}
           defaultValue=""
           render={({ field }) => (
@@ -143,10 +177,10 @@ const Login = () => {
               fullWidth
             />
           )}
-        />
+        /> */}
 
         {/* Password_Field */}
-        <Controller
+        {/* <Controller
           name="password"
           control={control}
           defaultValue=""
@@ -196,7 +230,91 @@ const Login = () => {
               </Typography>
             </FormControl>
           )}
-        />
+        /> */}
+        {/* Phone Number */}
+        <Box sx={{ position: "relative", width: "100%" }}>
+          <Controller
+            name="phonenumber"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <TextField
+                label="Phone Number"
+                fullWidth
+                {...field}
+                error={!!errors.phonenumber}
+                helperText={errors.phonenumber?.message}
+                disabled={isLoading}
+                sx={{
+                  "& .MuiInputLabel-root": {
+                    fontSize: "1rem",
+                    letterSpacing: "0.1em",
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
+                    fontSize: "1rem",
+                    fontFamily: "'Mosafin SemBd', sans-serif",
+                    letterSpacing: "0.1em",
+                    "&:hover fieldset": {
+                      borderColor: "primary.main",
+                    },
+                    "& input": {
+                      backgroundColor: "white",
+                      borderRadius: "4px",
+                    },
+                  },
+                }}
+              />
+            )}
+          />
+          {phonenumber && phonenumber.length > 0 && !otpSent && (
+            <Button
+              variant="text"
+              size="small"
+              onClick={() => handleSendOtp(getValues())}
+              sx={{
+                position: "absolute",
+                top: "50%",
+                right: 10,
+                transform: "translateY(-50%)",
+                zIndex: 1,
+                padding: "4px 8px",
+                minWidth: "auto",
+              }}
+            >
+              Send OTP
+            </Button>
+          )}
+        </Box>
+
+        {/* OTP Input - Only show when OTP is sent */}
+        {otpSent && (
+          <Box>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              Enter the 6-digit OTP sent to your phone:
+            </Typography>
+            <MuiOtpInput
+              value={otp}
+              onChange={setOtp}
+              length={6}
+              TextFieldsProps={{
+                size: "small",
+                sx: {
+                  "& .MuiOutlinedInput-root": {
+                    height: 50,
+                    width: 50,
+                    "&:hover fieldset": {
+                      borderColor: "red",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "red",
+                    },
+                  },
+                },
+              }}
+            />
+          </Box>
+        )}
 
         <Button
           type="submit"

@@ -1,31 +1,51 @@
 import mongoose from "mongoose";
 
-const userRegistrationSchema = new mongoose.Schema(
-  {
-    username: {
-      type: String,
-      required: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    isDonor: {
-      type: Boolean,
-      default: false,
-    },
-    phonenumber: {
-      type: Number,
-      required: true,
-    },
+// const userRegistrationSchema = new mongoose.Schema(
+//   {
+//     username: {
+//       type: String,
+//       required: true,
+//     },
+//     email: {
+//       type: String,
+//       required: true,
+//       unique: true,
+//     },
+//     password: {
+//       type: String,
+//       required: true,
+//     },
+//     isDonor: {
+//       type: Boolean,
+//       default: false,
+//     },
+//     phonenumber: {
+//       type: Number,
+//       required: true,
+//     },
+//   },
+//   { timestamps: true }
+// );
+
+const userRegistrationSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
   },
-  { timestamps: true }
-);
+  isDonor: {
+    type: Boolean,
+    default: false,
+  },
+  phonenumber: {
+    type: Number,
+    required: true,
+  },
+  firebaseUid: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+});
 
 const userDetailsSchema = new mongoose.Schema(
   {
@@ -72,6 +92,7 @@ const userDetailsSchema = new mongoose.Schema(
 
 // Models for each schema
 const User = mongoose.model("User", userRegistrationSchema);
+
 const UserDetails = mongoose.model("UserDetails", userDetailsSchema);
 
 export { User, UserDetails };

@@ -2,16 +2,14 @@ import * as yup from "yup";
 
 export const registerSchema = yup.object().shape({
   name: yup.string().required("Name cannot be empty"),
-  email: yup.string().email("Invalid email").required("Email cannot be empty"),
-  phonenumber: yup.string().required("Phone Number cannot be empty"),
-  password: yup.string().required("Password cannot be empty"),
-  confirmPassword: yup.string().required("Confirm Password cannot be empty"),
+  phonenumber: yup.number().required("Phone Number cannot be empty"),
+  otp: yup.number(),
   isDonor: yup.boolean(),
 });
 
 export const loginSchema = yup.object().shape({
-  email: yup.string().email("Invalid email").required("Email cannot be empty"),
-  password: yup.string().required("Password cannot be empty"),
+  phonenumber: yup.number().required("Phone Number cannot be empty"),
+  otp: yup.number(),
 });
 
 export const donorApplicationSchema = yup.object().shape({

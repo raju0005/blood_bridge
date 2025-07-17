@@ -90,7 +90,7 @@ const createDonorDetails = asyncHandler(async (req, res) => {
 
   res.status(201).json({
     message: "User details added successfully",
-    details: newUserDetails,
+    details: newUserDetails, //this thing will be removed in prod
   });
 });
 
@@ -147,7 +147,7 @@ const getDonorsbyCityandBlood = asyncHandler(async (req, res) => {
 const getDonorById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   try {
-    const donor = await User.findById(id).select("-password");
+    const donor = await User.findById(id)
     if (!donor) {
       res.status(404);
       throw new Error("Donor not found");
