@@ -20,16 +20,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use("/", (req, res) => {
+app.get("/", (req, res) => {
   res.send("Welcome to BB Server ❌");
 });
 
 app.use("/api/bb/user", UserRoutes);
 app.use("/api/bb/donors", donorRoutes);
 
-// app.listen(port, () => {
-//   console.log(`Server Connected Successfully 🚀 running on ${port}`);
-// });
+app.listen(port, () => {
+  console.log(`Server Connected Successfully 🚀 running on ${port}`);
+});
 export default function handler(req, res) {
   app(req, res);
 }
