@@ -27,9 +27,9 @@ app.get("/", (req, res) => {
 app.use("/api/bb/user", UserRoutes);
 app.use("/api/bb/donors", donorRoutes);
 
-app.listen(port, () => {
-  console.log(`Server Connected Successfully 🚀 running on ${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server Connected Successfully 🚀 running on ${port}`);
+// });
 export default function handler(req, res) {
   app(req, res);
 }
