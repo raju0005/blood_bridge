@@ -8,6 +8,7 @@ export const usePhoneAuth = () => {
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [otpSent, setOtpSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isOtpVerifying, setIsOtpVerifying] = useState(false);
 
   const sendOtp = async (rawPhone) => {
     try {
@@ -51,7 +52,7 @@ export const usePhoneAuth = () => {
     }
 
     try {
-      setIsLoading(true);
+      setIsOtpVerifying(true);
       const result = await confirmationResult.confirm(otp);
       const idToken = await result.user.getIdToken();
       toast.success("OTP verified!");
@@ -61,7 +62,7 @@ export const usePhoneAuth = () => {
       toast.error("Invalid OTP");
       return null;
     } finally {
-      setIsLoading(false);
+      setIsOtpVerifying(false);
     }
   };
 
@@ -70,6 +71,7 @@ export const usePhoneAuth = () => {
     verifyOtp,
     otpSent,
     isLoading,
+    isOtpVerifying,
   };
 };
 

@@ -30,4 +30,6 @@ app.use("/api/bb/donors", donorRoutes);
 // app.listen(port, () => {
 //   console.log(`Server Connected Successfully 🚀 running on ${port}`);
 // });
-export default app;
+export default function handler(req, res) {
+  app(req, res);
+}

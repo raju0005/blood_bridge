@@ -26,7 +26,6 @@ const Register = () => {
   // const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [otp, setOtp] = useState("");
-
   const [userType, setUserType] = useState("");
 
   const {
@@ -50,6 +49,7 @@ const Register = () => {
     verifyOtp,
     otpSent,
     isLoading: isOtpLoading,
+    isOtpVerifying
   } = usePhoneAuth();
 
   const handleSendOtp = async (data) => {
