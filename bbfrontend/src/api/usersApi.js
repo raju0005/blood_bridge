@@ -113,7 +113,7 @@ export const useLogin = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.post("https://dev-blood-bridge.vercel.app/api/bb/user/login", {
+      const res = await axiosApi.post("user/login", {
         phonenumber,
         idToken,
       });

@@ -16,6 +16,14 @@ connectDB();
 
 const app = express();
 
+import cors from 'cors';
+app.use(cors({
+  origin: 'https://blood-bridge-app.vercel.app', // Or use "*" if public API
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true // if you're sending cookies
+}));
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
