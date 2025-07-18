@@ -1,4 +1,5 @@
 //PATHS
+import cors from "cors";
 import path from "path";
 import express from "express";
 import dotenv from "dotenv";
@@ -16,13 +17,21 @@ connectDB();
 
 const app = express();
 
-import cors from 'cors';
-app.use(cors({
-  origin: 'https://blood-bridge-app.vercel.app', // Or use "*" if public API
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true // if you're sending cookies
-}));
+app.use(
+  cors({
+    origin: true, // Allow all origins
+    credentials: true,
+  })
+);
 
+// Handle preflight for all routes
+app.options(
+  "*",
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
