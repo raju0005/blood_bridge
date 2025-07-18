@@ -3,6 +3,7 @@ import axiosApi from "./axiosApi";
 import { auth } from "../utils/firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 export const usePhoneAuth = () => {
   const [confirmationResult, setConfirmationResult] = useState(null);
@@ -112,7 +113,7 @@ export const useLogin = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axiosApi.post("/user/login", {
+      const res = await axios.post("https://dev-blood-bridge.vercel.app/api/bb/user/login", {
         phonenumber,
         idToken,
       });
