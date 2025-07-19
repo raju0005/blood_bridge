@@ -39,7 +39,27 @@
   .text-hide {
     opacity: 0;
   }
+  .blood-loader {
+    width: 60px;
+    height: 80px;
+    background: linear-gradient(#dc1818 0 0) bottom / 100% 0% no-repeat #ccc;
+    clip-path: path("M30 0 C10 30, 0 50, 30 80 C60 50, 50 30, 30 0 Z");
+    animation: fill-blood 2s infinite ease-in-out;
+  }
 }
+
+/* CSS */
+
+@keyframes fill-blood {
+  0% {
+    background-size: 100% 0%;
+  }
+  90%,
+  100% {
+    background-size: 100% 100%;
+  }
+}
+
 @keyframes driveBack {
   0% {
     transform: translateX(0);
