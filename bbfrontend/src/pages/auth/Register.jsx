@@ -49,7 +49,7 @@ const Register = () => {
     verifyOtp,
     otpSent,
     isLoading: isOtpLoading,
-    isOtpVerifying
+    isOtpVerifying,
   } = usePhoneAuth();
 
   const handleSendOtp = async (data) => {
@@ -330,14 +330,14 @@ const Register = () => {
         >
           <span
             className={`${
-              isLoading ? "text-hide" : ""
+              isLoading || isOtpVerifying ? "text-hide" : ""
             } transition-opacity duration-400 ease-in-out`}
           >
             Register
           </span>
           <span
             className={`${
-              isLoading ? "emoji-drive" : ""
+              isLoading || isOtpVerifying ? "emoji-drive" : ""
             } block transform transition-transform text-2xl`}
           >
             🚑

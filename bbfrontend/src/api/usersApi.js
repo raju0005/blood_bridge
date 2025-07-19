@@ -52,8 +52,8 @@ export const usePhoneAuth = () => {
       return null;
     }
 
+    setIsOtpVerifying(true);
     try {
-      setIsOtpVerifying(true);
       const result = await confirmationResult.confirm(otp);
       const idToken = await result.user.getIdToken();
       toast.success("OTP verified!");

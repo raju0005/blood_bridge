@@ -1,8 +1,9 @@
 import { Box } from "@mui/material";
 import DonorCard from "./DonorCard/DonorCard";
+import Loader from "../Loader";
 
 const DonorList = ({ donors, isLoading }) => {
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loader />;
   console.log(donors);
 
   return (
@@ -10,11 +11,11 @@ const DonorList = ({ donors, isLoading }) => {
       sx={{
         width: "100%",
         display: "flex",
-        gap:4,
+        gap: 4,
         flexDirection: "column",
         alignItems: "center",
-        borderRadius:'50px',
-        marginTop:'40px'
+        borderRadius: "50px",
+        marginTop: "40px",
       }}
     >
       {donors?.map((donor, index) => (

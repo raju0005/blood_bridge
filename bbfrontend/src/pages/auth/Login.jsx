@@ -44,6 +44,7 @@ const Login = () => {
     verifyOtp,
     otpSent,
     isLoading: isOtpLoading,
+    isOtpVerifying,
   } = usePhoneAuth();
 
   const navigate = useNavigate();
@@ -336,14 +337,14 @@ const Login = () => {
         >
           <span
             className={`${
-              isLoading ? "text-hide" : ""
+              isLoading || isOtpVerifying ? "text-hide" : ""
             } transition-opacity duration-400 ease-in-out`}
           >
             LogIn
           </span>
           <span
             className={`${
-              isLoading ? "emoji-drive" : ""
+              isLoading || isOtpVerifying ? "emoji-drive" : ""
             } block transform transition-transform text-2xl`}
           >
             🚑
