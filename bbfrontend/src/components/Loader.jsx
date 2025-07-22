@@ -1,6 +1,6 @@
 const Loader = () => {
   return (
-    <div class="relative w-30 h-30 mask-drop bg-gray-200 drop-shadow-2xl ">
+    <div class="relative w-30 h-30 mask-drop bg-gray-200 drop-shadow-2xl mt-10">
       <div class="absolute bottom-0 w-[200%] h-[200%]  animate-rise">
         <svg
           viewBox="0 0 1440 320"
