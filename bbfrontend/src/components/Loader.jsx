@@ -1,10 +1,10 @@
 const Loader = () => {
   return (
-    <div class="relative w-20 h-28 mask-drop bg-gray-200">
+    <div class="relative w-30 h-30 mask-drop bg-gray-200 drop-shadow-2xl ">
       <div class="absolute bottom-0 w-[200%] h-[200%]  animate-rise">
         <svg
           viewBox="0 0 1440 320"
-          class="absolute bottom-0 w-full h-40 animate-wave text-red-600 fill-current"
+          class="absolute bottom-0  h-30 animate-wave text-red-600 fill-current"
         >
           <path
             fill="currentColor"

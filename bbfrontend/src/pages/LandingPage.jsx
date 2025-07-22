@@ -77,7 +77,7 @@ const LandingPage = () => {
             textAlign: { xs: "center", md: "center" },
           }}
         >
-          <Loader />
+          
           <Typography
             sx={{
               mb: 3,
@@ -276,22 +276,41 @@ const LandingPage = () => {
             Don’t worry — our team will help contact local blood banks and try
             to arrange support on your behalf.
           </Typography>
-          <Typography
-            sx={{ fontFamily: "'Mosafin SemBd', sans-serif", mt: 1 }}
-            variant="body1"
+          <Button
+            sx={{
+              height: 40,
+              fontWeight: "bold",
+              fontSize: 15,
+              boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+              letterSpacing: "0.1em",
+              minWidth: "160px",
+              px: 4,
+              gap: 1,
+              color: "white",
+              display: "flex",
+              alignItems: "center",
+              mt:2
+            }}
+            className="bg-gradient-primary"
+            onClick={() => navigate(`/register`)}
           >
-            Reach us at:{" "}
             <Typography
-              component="span"
-              color="text.secondary"
-              sx={{
-                fontWeight: "bold",
-                fontFamily: "'Mosafin SemBd', sans-serif",
-              }}
+              sx={{ fontFamily: "'Mosafin SemBd', sans-serif",  }}
+              variant="body1"
             >
-              +91 98765 43210
+              Reach us at:{" "}
+              <Typography
+                component="span"
+                color="text.primary"
+                sx={{
+                  fontWeight: "bold",
+                  fontFamily: "'Mosafin SemBd', sans-serif",
+                }}
+              >
+                +91 98765 43210
+              </Typography>
             </Typography>
-          </Typography>
+          </Button>
         </Card>
       </Box>
 
@@ -302,9 +321,11 @@ const LandingPage = () => {
           px: 2,
           textAlign: "center",
           width: "100%",
+          position: "relative",
         }}
         className="bg-gradient-primary"
       >
+        <div className="absolute h-full w-full  left-0 bottom-0 bg-[linear-gradient(to_right,#fffffe_1px,transparent_1px),linear-gradient(to_bottom,#fffffe_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.3]"></div>
         <Typography variant="h5" color="white">
           © {new Date().getFullYear()} BloodBridge. All rights reserved.
         </Typography>
