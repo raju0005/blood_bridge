@@ -39,24 +39,27 @@
   .text-hide {
     opacity: 0;
   }
-  .blood-loader {
-    width: 60px;
-    height: 80px;
-    background: linear-gradient(#dc1818 0 0) bottom / 100% 0% no-repeat #ccc;
-    clip-path: path("M30 0 C10 30, 0 50, 30 80 C60 50, 50 30, 30 0 Z");
-    animation: fill-blood 2s infinite ease-in-out;
+  .mask-drop {
+    -webkit-mask: url("./assets/blood-drop.png") no-repeat center;
+    mask: url("./assets/blood-drop.png") no-repeat center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
+  .animate-wave {
+    animation: waveMove 4s linear infinite;
+  }
+  .animate-rise {
+    animation: rise 4s ease-in-out infinite;
   }
 }
 
-/* CSS */
-
-@keyframes fill-blood {
-  0% {
-    background-size: 100% 0%;
-  }
-  90%,
+@keyframes rise {
+  0%,
   100% {
-    background-size: 100% 100%;
+    bottom: -40%;
+  }
+  50% {
+    bottom: 2%;
   }
 }
 
@@ -66,5 +69,14 @@
   }
   100% {
     transform: translateX(-120px);
+  }
+}
+
+@keyframes waveMove {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-60%);
   }
 }

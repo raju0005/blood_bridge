@@ -71,8 +71,6 @@ const DonorApplication = () => {
 
   const onSubmit = async (data) => {
     try {
-      console.log("Submitting", data.profilePicture);
-
       const formData = new FormData();
       formData.append("dateofBirth", data.dateofBirth);
       formData.append("gender", data.gender);
@@ -328,6 +326,50 @@ const DonorApplication = () => {
           )}
         />
 
+        {/* City */}
+        <Controller
+          name="city"
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <FormControl
+              fullWidth
+              margin="normal"
+              disabled={!selectedState}
+              sx={{
+                "& .MuiInputLabel-root": {
+                  fontSize: "15px",
+                  letterSpacing: "0.1em",
+                },
+                "& .MuiOutlinedInput-root": {
+                  fontSize: "15px",
+                  fontFamily: "'Mosafin SemBd', sans-serif",
+                  letterSpacing: "0.1em",
+                  "&:hover fieldset": {
+                    borderColor: "primary.main",
+                  },
+                },
+              }}
+              error={!!errors.city}
+            >
+              <InputLabel>City</InputLabel>
+              <Select {...field} label="City" disabled={!cities.length}>
+                {cities.map((city) => (
+                  <MenuItem
+                    sx={{ fontFamily: "'Mosafin SemBd', sans-serif" }}
+                    key={city.name}
+                    value={city.name}
+                  >
+                    {city.name}
+                  </MenuItem>
+                ))}
+              </Select>
+              <Typography variant="caption" color="error">
+                {errors.city?.message}
+              </Typography>
+            </FormControl>
+          )}
+        />
         {/* State */}
         <Controller
           name="state"
@@ -374,50 +416,6 @@ const DonorApplication = () => {
               </Select>
               <Typography variant="caption" color="error">
                 {errors.state?.message}
-              </Typography>
-            </FormControl>
-          )}
-        />
-
-        {/* City */}
-        <Controller
-          name="city"
-          control={control}
-          defaultValue=""
-          render={({ field }) => (
-            <FormControl
-              fullWidth
-              margin="normal"
-              sx={{
-                "& .MuiInputLabel-root": {
-                  fontSize: "15px",
-                  letterSpacing: "0.1em",
-                },
-                "& .MuiOutlinedInput-root": {
-                  fontSize: "15px",
-                  fontFamily: "'Mosafin SemBd', sans-serif",
-                  letterSpacing: "0.1em",
-                  "&:hover fieldset": {
-                    borderColor: "primary.main",
-                  },
-                },
-              }}
-              error={!!errors.city}
-            >
-              <InputLabel>City</InputLabel>
-              <Select {...field} label="City" disabled={!cities.length}>
-                {cities.map((city) => (
-                  <MenuItem
-                    sx={{ fontFamily: "'Mosafin SemBd', sans-serif" }}
-                    key={city.name}
-                    value={city.name}
-                  >
-                    {city.name}
-                  </MenuItem>
-                ))}
-              </Select>
-              <Typography variant="caption" color="error">
-                {errors.city?.message}
               </Typography>
             </FormControl>
           )}

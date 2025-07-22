@@ -17,6 +17,7 @@ import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import PrivacyTipIcon from "@mui/icons-material/PrivacyTip";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import toast from "react-hot-toast";
+import Loader from "../components/Loader";
 
 const cardData = [
   {
@@ -76,6 +77,7 @@ const LandingPage = () => {
             textAlign: { xs: "center", md: "center" },
           }}
         >
+          <Loader />
           <Typography
             sx={{
               mb: 3,
@@ -243,7 +245,7 @@ const LandingPage = () => {
               color: "white",
             }}
             className="bg-gradient-primary"
-            onClick={()=>navigate(`/register`)}
+            onClick={() => navigate(`/register`)}
           >
             Switch to Donor Mode
           </Button>
@@ -296,7 +298,7 @@ const LandingPage = () => {
       <Box
         sx={{
           mt: 6,
-          py: {md:7,xs:5},
+          py: { md: 7, xs: 5 },
           px: 2,
           textAlign: "center",
           width: "100%",
