@@ -15,9 +15,6 @@ import { useEffect, useState } from "react";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import PrivacyTipIcon from "@mui/icons-material/PrivacyTip";
-import SupportAgentIcon from "@mui/icons-material/SupportAgent";
-import toast from "react-hot-toast";
-import Loader from "../components/Loader";
 
 const cardData = [
   {
@@ -61,6 +58,7 @@ const LandingPage = () => {
       }}
       mt={10}
     >
+      {/* Hero Section */}
       <Box
         sx={{
           height: { xs: "50vh", md: "auto" },
@@ -77,7 +75,6 @@ const LandingPage = () => {
             textAlign: { xs: "center", md: "center" },
           }}
         >
-          
           <Typography
             sx={{
               mb: 3,
@@ -150,17 +147,50 @@ const LandingPage = () => {
         </Button>
       </Box>
 
+      {/* What is blood bridge */}
+      <Box
+        sx={{
+          mt: { md: 25, xs: 35 },
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant={isMobile ? "h4" : "h3"} color="text.secondary">
+          What is Blood Bridge?
+        </Typography>
+        <Typography
+          sx={{ width: { md: "55%", xs: "95%" }, mt: 5, textAlign: "center" }}
+          variant={isMobile ? "h6" : "h5"}
+          color="text.primary"
+        >
+          "Blood Bridge is a platform that acts as a bridge between blood donors
+          and people who need blood. It helps connect them quickly and safely,
+          especially in emergencies. All contact numbers are verified to ensure
+          they are real and trustworthy,not spam. Our donors join voluntarily,
+          understanding the true value of life and the importance of donating
+          blood. They are always ready to help, making the process of finding
+          and giving blood faster, easier, and more reliable."
+        </Typography>
+      </Box>
+
+      {/* Cards / Features */}
       <Box
         sx={{
           width: "100%",
           display: "flex",
+          flexDirection: "column",
           justifyContent: "center",
+          gap: 7,
           alignItems: "center",
           px: 2,
           py: 4,
           mt: { md: 20, xs: 15 },
         }}
       >
+        <Typography variant={isMobile ? "h4" : "h3"} color="text.secondary">
+          Why You Can Trust Us
+        </Typography>
         <Stack
           direction={isMobile ? "column" : "row"}
           spacing={10}
@@ -177,7 +207,7 @@ const LandingPage = () => {
                 textAlign: "center",
                 borderRadius: 2,
                 border: "1px solid red",
-                boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                // boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
                 color: "#fff",
                 transition: "all 0.3s ease-in-out",
                 "&:hover": {
@@ -212,6 +242,36 @@ const LandingPage = () => {
           ))}
         </Stack>
       </Box>
+
+      <Typography
+        variant={isMobile ? "h4" : "h3"}
+        color="text.secondary"
+        gutterBottom
+        sx={{ mt: 10, textAlign: "center" }}
+      >
+        Two Ways to Join Blood Bridge
+      </Typography>
+
+      <Typography
+        variant={isMobile ? "h6" : "h5"}
+        color="text.primary"
+        sx={{
+          width: { md: "65%", xs: "95%" },
+          mx: "auto",
+          textAlign: "center",
+          mt: 2,
+        }}
+      >
+        There are two types of users on Blood Bridge,
+        <span className="text-red-600 "> those looking for blood </span> and
+        <span className="text-red-600 "> those who want to donate. </span>
+        If you need blood, you can register and request help from nearby donors.
+        If you're a donor, you can sign up to be notified when someone near you
+        needs your blood type. It's simple, fast, and life-saving—choose your
+        role and be part of the solution.
+      </Typography>
+
+      {/* Motivation Button */}
       <Box sx={{ mt: 10 }}>
         <Card
           sx={{
@@ -221,14 +281,14 @@ const LandingPage = () => {
             boxShadow: "none",
           }}
         >
-          <Typography variant={isMobile ? "h4" : "h3"} gutterBottom>
+          <Typography
+            variant={isMobile ? "h4" : "h3"}
+            color="text.secondary"
+            gutterBottom
+          >
             Become a Lifesaver
           </Typography>
-          <Typography
-            variant={isMobile ? "h6" : "h5"}
-            color="text.secondary"
-            mb={4}
-          >
+          <Typography variant={isMobile ? "h6" : "h5"} mb={4}>
             Every drop counts. By becoming a donor, you have the power to save
             up to three lives with one donation.
           </Typography>
@@ -251,6 +311,7 @@ const LandingPage = () => {
           </Button>
         </Card>
       </Box>
+      {/* 24/7 support */}
       <Box sx={{ my: 10 }}>
         <Card
           sx={{
@@ -263,18 +324,21 @@ const LandingPage = () => {
             boxShadow: "none",
           }}
         >
-          <Typography variant={isMobile ? "h4" : "h3"} gutterBottom>
+          <Typography
+            variant={isMobile ? "h4" : "h3"}
+            color="text.secondary"
+            gutterBottom
+          >
             Can't find a donor?
           </Typography>
 
           <Typography
             variant={isMobile ? "h6" : "h5"}
-            color="text.secondary"
             sx={{ maxWidth: { md: "90%" }, textAlign: "center" }}
           >
             If you're unable to find a match, {!isMobile ? "" : <br />}
-            Don’t worry — our team will help contact local blood banks and try
-            to arrange support on your behalf.
+            Don’t worry our team will help contact local blood banks and try to
+            arrange support on your behalf.
           </Typography>
           <Button
             sx={{
@@ -289,13 +353,13 @@ const LandingPage = () => {
               color: "white",
               display: "flex",
               alignItems: "center",
-              mt:2
+              mt: 2,
             }}
             className="bg-gradient-primary"
             onClick={() => navigate(`/register`)}
           >
             <Typography
-              sx={{ fontFamily: "'Mosafin SemBd', sans-serif",  }}
+              sx={{ fontFamily: "'Mosafin SemBd', sans-serif" }}
               variant="body1"
             >
               Reach us at:{" "}
