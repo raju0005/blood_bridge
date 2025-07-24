@@ -1,86 +1,49 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, TextField, Typography, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { profileSchema } from "../utils/yupSchemas";
-import { useNavigate } from "react-router";
-import { State, City } from "country-state-city";
 import toast from "react-hot-toast";
 import useUserStore from "../zustand/store";
 import { useGetProfile, UseUpdateProfile } from "../api/usersApi";
 
 const ProfilePage = () => {
-  const [cities, setCities] = useState([]);
-  const [states, setStates] = useState([]);
-  const [isEdit, setIsEdit] = useState(false);
-
-  const COUNTRY_CODE = "IN";
-  const navigate = useNavigate();
   const userInfo = useUserStore((state) => state.userInfo);
-
-  const { data: profileData, loading: loadingProfile } = useGetProfile();
+  const { data: profileData } = useGetProfile();
   const { updateProfile, loading: updating } = UseUpdateProfile();
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isEdit, setIsEdit] = useState(false);
 
   const {
     control,
     handleSubmit,
     setValue,
-    watch,
     reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(profileSchema),
   });
 
-  const selectedState = watch("state");
-  const selectedFile = watch("profilePicture");
-
-  useEffect(() => {
-    const fetchedStates = State.getStatesOfCountry(COUNTRY_CODE);
-    setStates(fetchedStates);
-
-    if (userInfo.isDonor) {
-      navigate("/home");
-    }
-  }, []);
-
-  useEffect(() => {
-    const selected = states.find((state) => state.name === selectedState);
-    if (selected) {
-      const fetchedCities = City.getCitiesOfState(
-        COUNTRY_CODE,
-        selected.isoCode
-      );
-      setCities(fetchedCities);
-    } else {
-      setCities([]);
-    }
-  }, [selectedState, states]);
-
   useEffect(() => {
     if (profileData) {
       const donor = profileData?.donor || {};
+
+      const formatDate = (dateStr) => {
+        if (!dateStr) return "";
+        return new Date(dateStr).toISOString().split("T")[0];
+      };
       reset({
-        dateofBirth: donor.dateofBirth || "",
+        dateofBirth: formatDate(donor.dateofBirth) || "",
         gender: donor.gender || "",
         city: donor.city || "",
         state: donor.state || "",
         bloodGroup: donor.bloodGroup || "",
-        dateOfLastDonation: donor.dateOfLastDonation || "",
+        dateOfLastDonation: formatDate(donor.dateOfLastDonation) || "",
         address: donor.address || "",
-        profilePicture: null, // keep empty unless uploading
+        profilePicture: null,
       });
     }
   }, [profileData, reset]);
@@ -88,49 +51,49 @@ const ProfilePage = () => {
   const onSubmit = async (formValues) => {
     try {
       const formData = new FormData();
-      for (const key in formValues) {
-        if (key === "profilePicture" && formValues[key]) {
-          formData.append(key, formValues[key]);
-        } else {
-          formData.append(key, formValues[key]);
-        }
+      formData.append("dateOfLastDonation", formValues.dateOfLastDonation);
+      if (formValues.profilePicture) {
+        formData.append("profilePicture", formValues.profilePicture);
       }
 
       await updateProfile(formData);
-      toast.success("Profile updated successfully.");
+      toast.success("Profile updated successfully");
       setIsEdit(false);
-    } catch (err) {
-      toast.error("Failed to update profile.");
+    } catch (error) {
+      toast.error("Failed to update profile");
     }
   };
-
-  const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
-  const genders = ["Male", "Female", "Other"];
 
   return (
     <Box
       sx={{
         width: "100%",
-        mx: "auto",
         display: "flex",
-        justifyContent: "space-around",
-        alignItems: "center",
         flexDirection: { xs: "column", md: "row" },
+        alignItems: "center",
+        gap: 4,
         mt: 5,
-        mb: 2,
+        px: { xs: 2, md: 6 },
+        position: "relative",
       }}
     >
+      {/* Edit Button */}
       <Button
         variant="outlined"
         size="small"
         startIcon={isEdit ? <CloseIcon /> : <EditIcon />}
-        sx={{ position: "absolute", top: 100, right: { md: 100, xs: 30 } }}
         onClick={() => setIsEdit((prev) => !prev)}
+        sx={{
+          position: "absolute",
+          top: { xs: 0, md: -60 },
+          right: { xs: 20, md: 30 },
+          zIndex: 10,
+        }}
       >
         {isEdit ? "Cancel" : "Edit"}
       </Button>
 
-      {/* Profile Picture Section */}
+      {/* Profile Picture */}
       <Box
         sx={{
           width: { md: "30%", xs: "83%" },
@@ -202,7 +165,7 @@ const ProfilePage = () => {
           disabled={!isEdit}
         >
           <AddIcon size={10} />
-          Upload Profile Picture
+          Upload New Profile Picture
           <input
             type="file"
             hidden
@@ -227,80 +190,55 @@ const ProfilePage = () => {
         )}
       </Box>
 
-      {/* Form Section */}
+      {/* Profile Form */}
       <Box
         component="form"
         onSubmit={handleSubmit(onSubmit)}
-        encType="multipart/form-data"
         sx={{
-          display: { md: "grid", xs: "flex" },
-          flexDirection: "column",
-          gridTemplateColumns: "repeat(3, 1fr)",
+          flex: 1,
+          display: "grid",
           gap: 2,
-          width: { md: "50%", xs: "83%" },
+          gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
         }}
       >
-        {/* Date of Birth */}
-        <Controller
-          name="dateofBirth"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              type="date"
-              fullWidth
-              label="Date of Birth"
-              InputLabelProps={{ shrink: true }}
-              disabled={!isEdit}
-              error={!!errors.dateofBirth}
-              helperText={errors.dateofBirth?.message}
-            />
-          )}
-        />
+        {[
+          { name: "dateofBirth", label: "Date of Birth" },
+          { name: "gender", label: "Gender" },
+          { name: "bloodGroup", label: "Blood Group" },
+          { name: "city", label: "City" },
+          { name: "state", label: "State" },
+          { name: "address", label: "Address", multiline: true },
+        ].map((field) => (
+          <Controller
+            key={field.name}
+            name={field.name}
+            control={control}
+            render={({ field: f }) => (
+              <TextField
+                {...f}
+                label={field.label}
+                type={field.type || "text"}
+                fullWidth
+                multiline={field.multiline}
+                slotProps={{
+                  input: {
+                    readOnly: true,
+                    sx: {
+                      pointerEvents: "none",
+                      "& .MuiOutlinedInput-notchedOutline": {},
+                      color: "black",
+                    },
+                  },
+                  inputLabel: {
+                    shrink: true,
+                  },
+                }}
+              />
+            )}
+          />
+        ))}
 
-        {/* Gender */}
-        <Controller
-          name="gender"
-          control={control}
-          render={({ field }) => (
-            <FormControl fullWidth error={!!errors.gender}>
-              <InputLabel>Gender</InputLabel>
-              <Select {...field} label="Gender" disabled={!isEdit}>
-                {genders.map((g) => (
-                  <MenuItem key={g} value={g}>
-                    {g}
-                  </MenuItem>
-                ))}
-              </Select>
-              <Typography variant="caption" color="error">
-                {errors.gender?.message}
-              </Typography>
-            </FormControl>
-          )}
-        />
-
-        {/* Blood Group */}
-        <Controller
-          name="bloodGroup"
-          control={control}
-          render={({ field }) => (
-            <FormControl fullWidth error={!!errors.bloodGroup}>
-              <InputLabel>Blood Group</InputLabel>
-              <Select {...field} label="Blood Group" disabled={!isEdit}>
-                {bloodGroups.map((b) => (
-                  <MenuItem key={b} value={b}>
-                    {b}
-                  </MenuItem>
-                ))}
-              </Select>
-              <Typography variant="caption" color="error">
-                {errors.bloodGroup?.message}
-              </Typography>
-            </FormControl>
-          )}
-        />
-
-        {/* Last Donation */}
+        {/* Editable Field: Last Donation Date */}
         <Controller
           name="dateOfLastDonation"
           control={control}
@@ -308,101 +246,44 @@ const ProfilePage = () => {
             <TextField
               {...field}
               type="date"
+              label="Last Donation Date"
               fullWidth
-              label="Last Donation"
-              InputLabelProps={{ shrink: true }}
-              disabled={!isEdit}
+              slotProps={{
+                  input: !isEdit
+                    ? {
+                        readOnly: true,
+                        sx: {
+                          pointerEvents: "none",
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "red",
+                          },
+                          color: "black",
+                        },
+                      }
+                    : {},
+                  inputLabel: {
+                    shrink: true,
+                  },
+                }}
+             
               error={!!errors.dateOfLastDonation}
               helperText={errors.dateOfLastDonation?.message}
             />
           )}
         />
 
-        {/* Address */}
-        <Controller
-          name="address"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="Address"
-              multiline
-              minRows={2}
-              fullWidth
-              disabled={!isEdit}
-              error={!!errors.address}
-              helperText={errors.address?.message}
-              sx={{ gridColumn: "span 2" }}
-            />
-          )}
-        />
-
-        {/* City */}
-        <Controller
-          name="city"
-          control={control}
-          render={({ field }) => (
-            <FormControl fullWidth error={!!errors.city} disabled={!selectedState || !isEdit}>
-              <InputLabel>City</InputLabel>
-              <Select {...field} label="City">
-                {cities.map((city) => (
-                  <MenuItem key={city.name} value={city.name}>
-                    {city.name}
-                  </MenuItem>
-                ))}
-              </Select>
-              <Typography variant="caption" color="error">
-                {errors.city?.message}
-              </Typography>
-            </FormControl>
-          )}
-        />
-
-        {/* State */}
-        <Controller
-          name="state"
-          control={control}
-          render={({ field }) => (
-            <FormControl fullWidth error={!!errors.state} disabled={!isEdit}>
-              <InputLabel>State</InputLabel>
-              <Select
-                {...field}
-                label="State"
-                onChange={(e) => {
-                  field.onChange(e);
-                  setValue("city", ""); // reset city on state change
-                }}
-              >
-                {states.map((state) => (
-                  <MenuItem key={state.isoCode} value={state.name}>
-                    {state.name}
-                  </MenuItem>
-                ))}
-              </Select>
-              <Typography variant="caption" color="error">
-                {errors.state?.message}
-              </Typography>
-            </FormControl>
-          )}
-        />
-
-        {/* Submit */}
+        {/* Submit Button */}
         {isEdit && (
           <Box
-            sx={{
-              gridColumn: "span 3",
-              display: "flex",
-              justifyContent: "center",
-              mt: 4,
-            }}
+            sx={{ gridColumn: { md: "span 2" }, mt: 2, textAlign: "center" }}
           >
             <Button
               type="submit"
               variant="contained"
               disabled={updating}
-              sx={{ px: 5, py: 1.5, fontWeight: "bold" }}
+              sx={{ px: 4, py: 1.5 }}
             >
-              {updating ? "Saving..." : "Update"}
+              {updating ? "Saving..." : "Update Profile"}
             </Button>
           </Box>
         )}
