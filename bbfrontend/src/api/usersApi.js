@@ -186,3 +186,55 @@ export const useGetMe = () => {
 
   return { data, loading, error };
 };
+
+export const useGetProfile = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  useEffect(() => {
+    const getUserprofile = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await axiosApi.get("user/profile_details");
+        setData(res.data);
+      } catch (err) {
+        const message = err.response?.data?.message || "Something went wrong";
+        setError(message);
+        throw new Error(message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getUserprofile();
+  }, []);
+  return { data, loading, error };
+};
+
+export const UseUpdateProfile = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false); 
+  const [error, setError] = useState(null);
+
+  const updateProfile = async (formData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await axiosApi.patch("/donors/update_profile", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      setData(res.data);
+      return res.data;
+    } catch (err) {
+      setError(err.response?.data?.message || "Something went wrong.");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { updateProfile, loading, data, error };
+};
+

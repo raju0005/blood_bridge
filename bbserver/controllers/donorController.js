@@ -97,21 +97,31 @@ const createDonorDetails = asyncHandler(async (req, res) => {
 //updateDonorApplication
 const updateDonorProfile = asyncHandler(async (req, res) => {
   const userId = req.user._id;
-  const updates = req.body;
+  const updates = { ...req.body };
+
+  // If a file is uploaded, add it to updates
+  if (req.file) {
+    updates.profilePicture = req.file.filename;
+  }
+
   try {
     const updatedDonorProfile = await UserDetails.findOneAndUpdate(
       { userId },
-      {
-        $set: updates,
-      },
+      { $set: updates },
       { new: true }
     );
+
+    if (!updatedDonorProfile) {
+      res.status(404);
+      throw new Error("User profile not found");
+    }
+
     return res
-      .status(201)
+      .status(200)
       .json({ message: "Updated successfully", details: updatedDonorProfile });
   } catch (err) {
     res.status(500);
-    throw new Error("Error updating Profile " + err.message);
+    throw new Error("Error updating Profile: " + err.message);
   }
 });
 

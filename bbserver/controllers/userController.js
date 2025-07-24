@@ -239,4 +239,26 @@ const getUser = asyncHandler(async (req, res) => {
   return res.status(200).json(user);
 });
 
-export { createUser, loginUser, logOutUser, getUser };
+const getUserProfile = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const donorDetails = await UserDetails.findOne({ userId });
+
+    if (!donorDetails) {
+      res.status(404);
+      throw new Error("User details not found");
+    }
+
+    return res.status(200).json({
+      user: req.user,
+      donor: donorDetails,
+    });
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    res.status(500);
+    throw new Error(error.message);
+  }
+});
+
+export { createUser, loginUser, logOutUser, getUser, getUserProfile };

@@ -4,6 +4,7 @@ import {
   createDonorDetails,
   getDonorById,
   getDonorsbyCityandBlood,
+  updateDonorProfile,
 } from "../controllers/donorController.js";
 import upload from "../middlewares/multer.js";
 
@@ -19,4 +20,7 @@ router
     createDonorDetails
   );
 router.route("/:id").get(authenticate, getDonorById);
+router
+  .route("/update_profile")
+  .patch(authenticate, upload.single("profilePicture"), updateDonorProfile);
 export default router;

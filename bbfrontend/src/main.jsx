@@ -4,7 +4,6 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter } from "react-router-dom";
 import { Route, RouterProvider, createRoutesFromElements } from "react-router";
-import { Provider } from "react-redux";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import App from "./App.jsx";
@@ -15,6 +14,7 @@ import WelcomePage from "./pages/LandingPage.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import ProtectedRoutes from "./components/ProtectedRoutes.jsx";
 import DonorApplication from "./pages/DonorApplication.jsx";
+import ProfilePage from "./pages/ProfilePage.jsx";
 
 const theme = createTheme({
   palette: {
@@ -53,6 +53,7 @@ const router = createBrowserRouter(
       <Route element={<ProtectedRoutes />}>
         <Route path="/home" element={<HomePage />} />
         <Route path="/donor_application" element={<DonorApplication />} />
+        <Route path="/profile" element={<ProfilePage />} />
         {/* <Route path="/donor/:userId" element={<DonorDetailsPage />} /> */}
       </Route>
     </Route>
