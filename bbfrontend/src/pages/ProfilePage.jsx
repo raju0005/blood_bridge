@@ -9,13 +9,17 @@ import { profileSchema } from "../utils/yupSchemas";
 import toast from "react-hot-toast";
 import useUserStore from "../zustand/store";
 import { useGetProfile, UseUpdateProfile } from "../api/usersApi";
+import { useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
 
 const ProfilePage = () => {
   const userInfo = useUserStore((state) => state.userInfo);
-  const { data: profileData } = useGetProfile();
+  const { data: profileData, loading: isLoading } = useGetProfile();
   const { updateProfile, loading: updating } = UseUpdateProfile();
   const [selectedFile, setSelectedFile] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
+
+  const navigate = useNavigate();
 
   const {
     control,
@@ -29,6 +33,9 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (profileData) {
+      if (!profileData.user.isDonor) {
+        navigate("/home");
+      }
       const donor = profileData?.donor || {};
 
       const formatDate = (dateStr) => {
@@ -64,6 +71,14 @@ const ProfilePage = () => {
     }
   };
 
+  if (isLoading)
+    return (
+      <div className="w-full flex justify-center items-center h-full">
+        {" "}
+        <Loader />
+      </div>
+    );
+
   return (
     <Box
       sx={{
@@ -71,8 +86,9 @@ const ProfilePage = () => {
         display: "flex",
         flexDirection: { xs: "column", md: "row" },
         alignItems: "center",
+        justifyContent: "center",
         gap: 4,
-        mt: 5,
+        mt: { xs: 5, md: 10 },
         px: { xs: 2, md: 6 },
         position: "relative",
       }}
@@ -151,33 +167,40 @@ const ProfilePage = () => {
           </Box>
         )}
 
-        <Button
-          variant="outlined"
-          sx={{
-            border: "2px dashed",
-            width: "100%",
-            height: "56px",
-            justifyContent: "center",
-            gap: 1,
-            mt: 4,
-          }}
-          component="label"
-          disabled={!isEdit}
-        >
-          <AddIcon size={10} />
-          Upload New Profile Picture
-          <input
-            type="file"
-            hidden
-            accept="image/*"
-            onChange={(e) => {
-              if (!isEdit) return;
-              setValue("profilePicture", e.target.files[0], {
-                shouldValidate: true,
-              });
+        <Typography variant="h5" color="text.secondary">
+          Name: {profileData?.user.username}
+        </Typography>
+        <Typography variant="h6" color="text.secondary">
+          {profileData?.user.phonenumber}
+        </Typography>
+
+        {isEdit && (
+          <Button
+            variant="outlined"
+            sx={{
+              border: "none",
+              justifyContent: "center",
+              position: "absolute",
+              bottom: 80,
+              bgcolor: "white",
             }}
-          />
-        </Button>
+            component="label"
+          >
+            <EditIcon size={10} />
+
+            <input
+              type="file"
+              hidden
+              accept="image/*"
+              onChange={(e) => {
+                if (!isEdit) return;
+                setValue("profilePicture", e.target.files[0], {
+                  shouldValidate: true,
+                });
+              }}
+            />
+          </Button>
+        )}
         {selectedFile && (
           <Typography variant="body2" mt={1}>
             {selectedFile.name}
@@ -191,72 +214,71 @@ const ProfilePage = () => {
       </Box>
 
       {/* Profile Form */}
-      <Box
-        component="form"
-        onSubmit={handleSubmit(onSubmit)}
-        sx={{
-          flex: 1,
-          display: "grid",
-          gap: 2,
-          gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
-        }}
-      >
-        {[
-          { name: "dateofBirth", label: "Date of Birth" },
-          { name: "gender", label: "Gender" },
-          { name: "bloodGroup", label: "Blood Group" },
-          { name: "city", label: "City" },
-          { name: "state", label: "State" },
-          { name: "address", label: "Address", multiline: true },
-        ].map((field) => (
-          <Controller
-            key={field.name}
-            name={field.name}
-            control={control}
-            render={({ field: f }) => (
-              <TextField
-                {...f}
-                label={field.label}
-                type={field.type || "text"}
-                fullWidth
-                multiline={field.multiline}
-                slotProps={{
-                  input: {
-                    readOnly: true,
-                    sx: {
-                      pointerEvents: "none",
-                      "& .MuiOutlinedInput-notchedOutline": {},
-                      color: "black",
+      {profileData?.user.isDonor && (
+        <Box
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+          sx={{
+            flex: 1,
+            display: "grid",
+            gap: 2,
+            gridTemplateColumns: { xs: "repeat(2, 1fr)", md: "repeat(3, 1fr)" },
+          }}
+        >
+          {[
+            { name: "dateofBirth", label: "Date of Birth" },
+            { name: "gender", label: "Gender" },
+            { name: "bloodGroup", label: "Blood Group" },
+            { name: "city", label: "City" },
+            { name: "state", label: "State" },
+            { name: "address", label: "Address", multiline: true },
+          ].map((field) => (
+            <Controller
+              key={field.name}
+              name={field.name}
+              control={control}
+              render={({ field: f }) => (
+                <TextField
+                  {...f}
+                  label={field.label}
+                  type={field.type || "text"}
+                  fullWidth
+                  multiline={field.multiline}
+                  slotProps={{
+                    input: {
+                      readOnly: true,
+                      sx: {
+                        pointerEvents: "none",
+                        "& .MuiOutlinedInput-notchedOutline": {},
+                        color: "black",
+                      },
                     },
-                  },
-                  inputLabel: {
-                    shrink: true,
-                  },
-                }}
-              />
-            )}
-          />
-        ))}
+                    inputLabel: {
+                      shrink: true,
+                    },
+                  }}
+                />
+              )}
+            />
+          ))}
 
-        {/* Editable Field: Last Donation Date */}
-        <Controller
-          name="dateOfLastDonation"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              type="date"
-              label="Last Donation Date"
-              fullWidth
-              slotProps={{
+          {/* Editable Field: Last Donation Date */}
+          <Controller
+            name="dateOfLastDonation"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                type="date"
+                label="Last Donation Date"
+                fullWidth
+                slotProps={{
                   input: !isEdit
                     ? {
                         readOnly: true,
                         sx: {
                           pointerEvents: "none",
-                          "& .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "red",
-                          },
+                          "& .MuiOutlinedInput-notchedOutline": {},
                           color: "black",
                         },
                       }
@@ -265,29 +287,28 @@ const ProfilePage = () => {
                     shrink: true,
                   },
                 }}
-             
-              error={!!errors.dateOfLastDonation}
-              helperText={errors.dateOfLastDonation?.message}
-            />
-          )}
-        />
+                error={!!errors.dateOfLastDonation}
+                helperText={errors.dateOfLastDonation?.message}
+              />
+            )}
+          />
 
-        {/* Submit Button */}
-        {isEdit && (
-          <Box
-            sx={{ gridColumn: { md: "span 2" }, mt: 2, textAlign: "center" }}
-          >
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={updating}
-              sx={{ px: 4, py: 1.5 }}
-            >
-              {updating ? "Saving..." : "Update Profile"}
-            </Button>
-          </Box>
-        )}
-      </Box>
+          {/* Submit Button */}
+          {isEdit && (
+            <Box sx={{ gridColumn: {xs:"span 2",md:"span 3"}, mt: 2, textAlign: "center" }}>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={updating}
+                sx={{ px: 4, py: 1.5 }}
+                className="bg-gradient-primary"
+              >
+                {updating ? "Saving..." : "Update Profile"}
+              </Button>
+            </Box>
+          )}
+        </Box>
+      )}
     </Box>
   );
 };
