@@ -101,8 +101,9 @@ const updateDonorProfile = asyncHandler(async (req, res) => {
 
   // If a file is uploaded, add it to updates
 
-  updates.profilePicture = req.file ? req.file.path : null;
-
+  if (req.file) {
+    updates.profilePicture = req.file.path;
+  }
   try {
     const updatedDonorProfile = await UserDetails.findOneAndUpdate(
       { userId },

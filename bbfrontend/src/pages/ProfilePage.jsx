@@ -3,6 +3,7 @@ import { Box, Button, TextField, Typography, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { profileSchema } from "../utils/yupSchemas";
@@ -43,6 +44,8 @@ const ProfilePage = () => {
         return new Date(dateStr).toISOString().split("T")[0];
       };
       reset({
+        username: profileData?.user.username,
+        phonenumber: profileData?.user.phonenumber,
         dateofBirth: formatDate(donor.dateofBirth) || "",
         gender: donor.gender || "",
         city: donor.city || "",
@@ -50,7 +53,7 @@ const ProfilePage = () => {
         bloodGroup: donor.bloodGroup || "",
         dateOfLastDonation: formatDate(donor.dateOfLastDonation) || "",
         address: donor.address || "",
-        profilePicture: null,
+        profilePicture: donor.profilePicture || "",
       });
     }
   }, [profileData, reset]);
@@ -59,13 +62,15 @@ const ProfilePage = () => {
     try {
       const formData = new FormData();
       formData.append("dateOfLastDonation", formValues.dateOfLastDonation);
-      if (formValues.profilePicture) {
+
+      if (formValues.profilePicture instanceof File) {
         formData.append("profilePicture", formValues.profilePicture);
       }
 
       await updateProfile(formData);
       toast.success("Profile updated successfully");
       setIsEdit(false);
+      setSelectedFile(null);
     } catch (error) {
       toast.error("Failed to update profile");
     }
@@ -116,96 +121,84 @@ const ProfilePage = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          position: "relative",
+          gap: 1,
         }}
       >
-        {selectedFile ? (
+        {/* Image container with relative positioning for icon */}
+        <Box sx={{ position: "relative", width: 160, height: 160 }}>
           <Box
             component="img"
-            src={URL.createObjectURL(selectedFile)}
+            src={
+              selectedFile
+                ? URL.createObjectURL(selectedFile)
+                : profileData?.donor?.profilePicture || ""
+            }
             alt="Profile"
             sx={{
-              width: 160,
-              height: 160,
+              width: "100%",
+              height: "100%",
               objectFit: "cover",
               borderRadius: 3,
               border: 2,
               borderColor: "red",
-              mb: 1,
             }}
           />
-        ) : profileData?.donor?.profilePicture ? (
+
+          {/* Edit (select photo) icon */}
+          {isEdit && (
+            <IconButton
+              component="label"
+              sx={{
+                position: "absolute",
+                bottom: 8,
+                right: 8,
+                bgcolor: "white",
+                boxShadow: 1,
+                "&:hover": { bgcolor: "#eee" },
+              }}
+            >
+              <EditIcon className="text-red-500" fontSize="small" />
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    setSelectedFile(file); // ✅ needed to show filename
+                    setValue("profilePicture", file, { shouldValidate: true });
+                  }
+                }}
+              />
+            </IconButton>
+          )}
+        </Box>
+
+        {/* Show selected file name with delete icon */}
+        {selectedFile && isEdit && (
           <Box
-            component="img"
-            src={profileData.donor.profilePicture}
-            alt="Profile"
             sx={{
-              width: 160,
-              height: 160,
-              objectFit: "cover",
-              borderRadius: 3,
-              border: 2,
-              borderColor: "red",
-              mb: 1,
-            }}
-          />
-        ) : (
-          <Box
-            sx={{
-              width: "180px",
-              height: "180px",
-              borderRadius: "50%",
-              backgroundColor: "#f0f0f0",
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
-              fontSize: "1rem",
-              mt: 5,
+              gap: 1,
+              mt: 0.5,
             }}
           >
-            No Image
+            <Typography variant="body2">{selectedFile.name}</Typography>
+            <IconButton
+              color="error"
+              size="small"
+              onClick={() => {
+                setSelectedFile(null);
+                setValue("profilePicture", null);
+              }}
+            >
+              <DeleteOutlineIcon fontSize="small" />
+            </IconButton>
           </Box>
         )}
 
-        <Typography variant="h5" color="text.secondary">
-          Name: {profileData?.user.username}
-        </Typography>
-        <Typography variant="h6" color="text.secondary">
-          {profileData?.user.phonenumber}
-        </Typography>
-
-        {isEdit && (
-          <Button
-            variant="outlined"
-            sx={{
-              border: "none",
-              justifyContent: "center",
-              position: "absolute",
-              bottom: 80,
-              bgcolor: "white",
-            }}
-            component="label"
-          >
-            <EditIcon size={10} />
-
-            <input
-              type="file"
-              hidden
-              accept="image/*"
-              onChange={(e) => {
-                if (!isEdit) return;
-                setValue("profilePicture", e.target.files[0], {
-                  shouldValidate: true,
-                });
-              }}
-            />
-          </Button>
-        )}
-        {selectedFile && (
-          <Typography variant="body2" mt={1}>
-            {selectedFile.name}
-          </Typography>
-        )}
+        {/* Validation error */}
         {errors.profilePicture && (
           <Typography variant="caption" color="error">
             {errors.profilePicture?.message}
@@ -226,6 +219,8 @@ const ProfilePage = () => {
           }}
         >
           {[
+            { name: "username", label: "User name" },
+            { name: "phonenumber", label: "Phone Number" },
             { name: "dateofBirth", label: "Date of Birth" },
             { name: "gender", label: "Gender" },
             { name: "bloodGroup", label: "Blood Group" },
@@ -295,15 +290,48 @@ const ProfilePage = () => {
 
           {/* Submit Button */}
           {isEdit && (
-            <Box sx={{ gridColumn: {xs:"span 2",md:"span 3"}, mt: 2, textAlign: "center" }}>
+            <Box
+              sx={{
+                gridColumn: { xs: "span 2", md: "span 3" },
+                mt: 2,
+                textAlign: "center",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
               <Button
                 type="submit"
                 variant="contained"
-                disabled={updating}
-                sx={{ px: 4, py: 1.5 }}
+                disabled={isLoading}
+                sx={{
+                  height: 50,
+                  fontWeight: "bold",
+                  fontSize: 15,
+                  letterSpacing: "0.1em",
+                  boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                  gap: 2,
+                  minWidth: "160px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                }}
                 className="bg-gradient-primary"
               >
-                {updating ? "Saving..." : "Update Profile"}
+                <span
+                  className={`${
+                    updating ? "text-hide" : ""
+                  } transition-opacity duration-400 ease-in-out`}
+                >
+                  Update
+                </span>
+                <span
+                  className={`${
+                    updating ? "emoji-drive" : ""
+                  } block transform transition-transform text-2xl`}
+                >
+                  🚑
+                </span>
               </Button>
             </Box>
           )}

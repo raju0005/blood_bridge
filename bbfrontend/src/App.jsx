@@ -11,7 +11,7 @@ const App = () => {
       <div>
         <Toaster
           toastOptions={{
-            className: "md:min-w-xl min-w-sm text-md md:text-lg",
+            className: "text-md md:text-lg",
           }}
           position="top-center"
           reverseOrder={true}
