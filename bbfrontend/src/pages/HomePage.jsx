@@ -18,8 +18,8 @@ const HomePage = () => {
   // const navigate = useNavigate();
   // const dispatch = useDispatch();
   const [filters, setFilters] = useState({
-    selectedCity: "Hyderabad",
-    selectedState: "Telangana",
+    selectedCity: "Bhimavaram",
+    selectedState: "Andhra Pradesh",
     bloodGroup: "A+",
   });
   const [cities, setCities] = useState([]);

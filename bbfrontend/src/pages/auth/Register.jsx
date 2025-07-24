@@ -310,7 +310,6 @@ const Register = () => {
         <Button
           type="submit"
           variant="contained"
-          disabled={isLoading}
           sx={{
             height: 50,
             fontWeight: "bold",
