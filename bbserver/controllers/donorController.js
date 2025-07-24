@@ -129,10 +129,8 @@ const getDonorsbyCityandBlood = asyncHandler(async (req, res) => {
     });
 
     const filteredDonors = donors.filter((donor) => donor.userId !== null);
-
     if (filteredDonors.length === 0) {
-      res.status(404);
-      throw new Error("No donors found");
+      return res.status(200).json([]);
     }
 
     console.log(filteredDonors[0].userId);
