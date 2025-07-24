@@ -86,7 +86,7 @@ const createDonorDetails = asyncHandler(async (req, res) => {
   // Only now: update user's donor status
   userExists.isDonor = true;
   await userExists.save();
-  console.log(newUserDetails,userExists)
+  console.log(newUserDetails, userExists);
 
   res.status(201).json({
     message: "User details added successfully",
@@ -131,8 +131,8 @@ const getDonorsbyCityandBlood = asyncHandler(async (req, res) => {
     const filteredDonors = donors.filter((donor) => donor.userId !== null);
 
     if (filteredDonors.length === 0) {
-      res.status(404).json({ message: "No donors found" });
-      return;
+      res.status(404);
+      throw new Error("No donors found");
     }
 
     console.log(filteredDonors[0].userId);
@@ -147,7 +147,7 @@ const getDonorsbyCityandBlood = asyncHandler(async (req, res) => {
 const getDonorById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   try {
-    const donor = await User.findById(id)
+    const donor = await User.findById(id);
     if (!donor) {
       res.status(404);
       throw new Error("Donor not found");
