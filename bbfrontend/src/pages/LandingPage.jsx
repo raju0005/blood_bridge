@@ -15,6 +15,10 @@ import { useEffect, useState } from "react";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import PrivacyTipIcon from "@mui/icons-material/PrivacyTip";
+import PersonSearchIcon from "@mui/icons-material/PersonSearch";
+import HandshakeIcon from "@mui/icons-material/Handshake";
+import ShieldIcon from "@mui/icons-material/Shield";
+import BloodtypeIcon from "@mui/icons-material/Bloodtype";
 
 const cardData = [
   {
@@ -188,7 +192,17 @@ const LandingPage = () => {
           mt: { md: 20, xs: 15 },
         }}
       >
-        <Typography variant={isMobile ? "h4" : "h3"} color="text.secondary">
+        <Typography
+          variant={isMobile ? "h4" : "h3"}
+          sx={{
+            mt: 10,
+            gap: 2,
+            display: "flex",
+            alignItems: "center",
+          }}
+          color="text.secondary"
+        >
+          <ShieldIcon sx={{ fontSize: 40 }} />
           Why You Can Trust Us
         </Typography>
         <Stack
@@ -247,8 +261,14 @@ const LandingPage = () => {
         variant={isMobile ? "h4" : "h3"}
         color="text.secondary"
         gutterBottom
-        sx={{ mt: 10, textAlign: "center" }}
+        sx={{
+          mt: 10,
+          gap: 2,
+          display: "flex",
+          alignItems: "center",
+        }}
       >
+        <HandshakeIcon sx={{ fontSize: 40 }} />
         Two Ways to Join Blood Bridge
       </Typography>
 
@@ -285,7 +305,15 @@ const LandingPage = () => {
             variant={isMobile ? "h4" : "h3"}
             color="text.secondary"
             gutterBottom
+            sx={{
+              mt: 10,
+              gap: 2,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
+            <BloodtypeIcon sx={{ fontSize: 40 }} />
             Become a Lifesaver
           </Typography>
           <Typography variant={isMobile ? "h6" : "h5"} mb={4}>
@@ -328,8 +356,13 @@ const LandingPage = () => {
             variant={isMobile ? "h4" : "h3"}
             color="text.secondary"
             gutterBottom
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
-            Can't find a donor?
+            <PersonSearchIcon sx={{ fontSize: 40 }} /> Can't find a donor?
           </Typography>
 
           <Typography
