@@ -84,9 +84,7 @@ const Register = () => {
       });
 
       setUserInfo(response);
-      toast.success(
-        "Registered Successfully! Thank you for joining the bridge of hope."
-      );
+      toast.success("Registered Successfully!");
       setTimeout(() => {
         navigate(userType === "donor" ? "/donor_application" : "/home");
       }, 800);

@@ -81,7 +81,7 @@ const Login = () => {
 
       setUserInfo(response);
       toast.success(
-        "Logged in Successfully! Every login is a step toward saving lives."
+        "Logged in Successfully!"
       );
       setTimeout(() => {
         navigate("/home");
