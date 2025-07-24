@@ -66,7 +66,7 @@ const HomePage = () => {
       setUserInfo(user);
     }
   }, [user, setUserInfo]);
-  
+
   const handleChange = (field) => (event) => {
     setFilters((prev) => ({ ...prev, [field]: event.target.value }));
   };
@@ -163,6 +163,7 @@ const HomePage = () => {
               value={filters.selectedCity}
               label="Select City"
               onChange={handleChange("selectedCity")}
+              disabled={!filters.selectedState}
             >
               {filters.selectedState && cities ? (
                 cities.map((city) => (

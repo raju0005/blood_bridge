@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import DonorCard from "./DonorCard/DonorCard";
 import Loader from "../Loader";
 
@@ -18,24 +18,15 @@ const DonorList = ({ donors, isLoading }) => {
         marginTop: "40px",
       }}
     >
-      {donors?.map((donor, index) => (
-        <DonorCard key={donor?.userId._id} donor={donor} />
-      ))}
-      {donors?.map((donor, index) => (
-        <DonorCard key={donor?.userId._id} donor={donor} />
-      ))}
-      {donors?.map((donor, index) => (
-        <DonorCard key={donor?.userId._id} donor={donor} />
-      ))}
-      {donors?.map((donor, index) => (
-        <DonorCard key={donor?.userId._id} donor={donor} />
-      ))}
-      {donors?.map((donor, index) => (
-        <DonorCard key={donor?.userId._id} donor={donor} />
-      ))}
-      {donors?.map((donor, index) => (
-        <DonorCard key={donor?.userId._id} donor={donor} />
-      ))}
+      {donors && donors.length > 0 ? (
+        donors?.map((donor, index) => (
+          <DonorCard key={donor?.userId._id} donor={donor} />
+        ))
+      ) : (
+        <Typography variant="h5" color="text.primary">
+          No Donors found.
+        </Typography>
+      )}
     </Box>
   );
 };
