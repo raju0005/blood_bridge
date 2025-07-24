@@ -191,29 +191,29 @@ export const useGetProfile = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  useEffect(() => {
-    const getUserprofile = async () => {
+
+  const fetchProfile = async () => {
+    try {
       setLoading(true);
-      setError(null);
-      try {
-        const res = await axiosApi.get("user/profile_details");
-        setData(res.data);
-      } catch (err) {
-        const message = err.response?.data?.message || "Something went wrong";
-        setError(message);
-        throw new Error(message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getUserprofile();
+      const res = await axiosApi.get("/donors/profile");
+      setData(res.data);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to load profile.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
   }, []);
-  return { data, loading, error };
+
+  return { data, loading, error, refetch: fetchProfile }; // ✅ Add refetch here
 };
 
-export const UseUpdateProfile = () => {
+export const useUpdateProfile = () => {
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const updateProfile = async (formData) => {
@@ -237,4 +237,3 @@ export const UseUpdateProfile = () => {
 
   return { updateProfile, loading, data, error };
 };
-

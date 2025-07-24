@@ -9,14 +9,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { profileSchema } from "../utils/yupSchemas";
 import toast from "react-hot-toast";
 import useUserStore from "../zustand/store";
-import { useGetProfile, UseUpdateProfile } from "../api/usersApi";
+import { useGetProfile, useUpdateProfile } from "../api/usersApi";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 
 const ProfilePage = () => {
   const userInfo = useUserStore((state) => state.userInfo);
-  const { data: profileData, loading: isLoading } = useGetProfile();
-  const { updateProfile, loading: updating } = UseUpdateProfile();
+  const { data: profileData, loading: isLoading,refetch } = useGetProfile();
+  const { updateProfile, loading: updating } = useUpdateProfile();
   const [selectedFile, setSelectedFile] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
 
@@ -71,6 +71,7 @@ const ProfilePage = () => {
       toast.success("Profile updated successfully");
       setIsEdit(false);
       setSelectedFile(null);
+      refetch()
     } catch (error) {
       toast.error("Failed to update profile");
     }
