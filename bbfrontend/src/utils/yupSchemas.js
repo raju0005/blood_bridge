@@ -48,16 +48,18 @@ export const profileSchema = yup.object().shape({
   dateOfLastDonation: yup
     .date()
     .typeError("Please select a valid last donation date"),
-  profilePicture: yup.mixed().notRequired(),
-  // .test(
-  //   "fileSize",
-  //   "File too large",
-  //   (value) => !value || value.size < 5 * 1024 * 1024
-  // ),
-  // .test(
-  //   "fileType",
-  //   "Unsupported file type",
-  //   (value) =>
-  //     !value || ["image/jpeg", "image/png", "image/jpg"].includes(value.type)
-  // ),
+  profilePicture: yup
+    .mixed()
+    .notRequired()
+    .test(
+      "fileSize",
+      "File too large",
+      (value) => !value || value.size < 5 * 1024 * 1024
+    )
+    .test(
+      "fileType",
+      "Unsupported file type",
+      (value) =>
+        !value || ["image/jpeg", "image/png", "image/jpg"].includes(value.type)
+    ),
 });
