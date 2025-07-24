@@ -2,7 +2,7 @@
 
 @font-face {
   font-family: "Sauber";
-  src: url("./assets/fonts/Sauber.otf") format("opentype");
+  src: url("./assets/fonts/Sauber.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
@@ -14,7 +14,7 @@
 }
 @font-face {
   font-family: "Mosafin SemBd";
-  src: url("./assets/fonts/mosafin-semibold.otf") format("opentype");
+  src: url("./assets/fonts/mosafin-semibold.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
@@ -44,7 +44,6 @@
     mask: url("./assets/blood-drop.png") no-repeat center;
     -webkit-mask-size: contain;
     mask-size: contain;
-    
   }
   .animate-wave {
     animation: waveMove 5s linear infinite;

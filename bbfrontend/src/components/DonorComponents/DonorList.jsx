@@ -3,7 +3,12 @@ import DonorCard from "./DonorCard/DonorCard";
 import Loader from "../Loader";
 
 const DonorList = ({ donors, isLoading }) => {
-  if (isLoading) return <Loader />;
+  if (isLoading)
+    return (
+      <div className="w-full flex justify-center items-center">
+        <Loader />
+      </div>
+    );
   console.log(donors);
 
   return (
