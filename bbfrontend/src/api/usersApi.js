@@ -195,7 +195,7 @@ export const useGetProfile = () => {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const res = await axiosApi.get("/donors/profile");
+      const res = await axiosApi.get("/user/profile_details");
       setData(res.data);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to load profile.");
@@ -208,7 +208,7 @@ export const useGetProfile = () => {
     fetchProfile();
   }, []);
 
-  return { data, loading, error, refetch: fetchProfile }; // ✅ Add refetch here
+  return { data, loading, error, refetch: fetchProfile }; 
 };
 
 export const useUpdateProfile = () => {
