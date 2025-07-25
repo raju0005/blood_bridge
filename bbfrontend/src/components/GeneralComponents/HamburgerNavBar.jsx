@@ -61,7 +61,11 @@ const HamburgerNavBar = ({ logout }) => {
               gap: 1,
             }}
           >
-            <IconButton color="primary" sx={{ p: 1 }}>
+            <IconButton
+              onClick={() => navigate("/profile")}
+              color="primary"
+              sx={{ p: 1 }}
+            >
               <PersonIcon sx={{ fontSize: 30 }} />
             </IconButton>
             <IconButton onClick={handleLogout} color="primary" sx={{ p: 1 }}>
