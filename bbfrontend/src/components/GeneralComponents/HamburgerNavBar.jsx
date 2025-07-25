@@ -14,11 +14,13 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import PersonIcon from "@mui/icons-material/Person";
 import { Logout } from "@mui/icons-material";
+import { useNavigate } from "react-router";
 
 const HamburgerNavBar = ({ logout }) => {
   const [open, setOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate();
 
   const toggleMenu = () => setOpen((prev) => !prev);
   const handleLogout = () => {
